@@ -1,69 +1,66 @@
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
-import { Avatar, Button } from 'react-native-paper';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
-    export default function Header({ username, onAdd }) {
+export default function Header() {
     return (
         <View style={styles.headerContainer}>
-        {/* Avatar e Nome */}
-        <View style={styles.avatarContainer}>
-            <Avatar.Image
-            size={40}
-            source={{ uri: 'https://via.placeholder.com/50' }}
-            style={styles.avatar}
-            />
-            <Text style={styles.username}>{username}</Text>
-        </View>
+            {/* Avatar e Nome */}
+            <View style={styles.avatarContainer}>
+                <Image
+                    source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBe6Lrai5rlwmAfhe0H2DMmDT0vcDYWAE_iw&s' }} // Substitua pela imagem desejada
+                    style={styles.avatar}
+                />
+                <Text style={styles.username}>Archive 404</Text>
+            </View>
 
-        {/* Menu de Navegação - Apenas Visual */}
-        <View style={styles.navContainer}   >
-            
-            <Text style={styles.navItemInactive}>Consoles</Text>
-            <Text style={styles.navItemActive}>Coleção</Text>
-            <Text style={styles.navItemInactive}>Conquistas</Text>
-        </View>
-
-        {/* Botão Adicionar */}
-        <Button mode="contained" onPress={onAdd} style={styles.addButton}>
-            Adicionar +
-        </Button>
+            {/* Menu de Navegação - Apenas Visual */}
+            <View style={styles.navContainer}>
+                <Text style={styles.navItemInactive}>Consoles</Text>
+                <Text style={styles.navItemActive}>Coleção</Text>
+                <Text style={styles.navItemInactive}>Conquistas</Text>
+            </View>
         </View>
     );
-    }
+}
 
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         backgroundColor: '#232729',
-        padding: 16,
+        paddingVertical: 40,
+        paddingHorizontal: 10,
     },
     avatarContainer: {
+        marginTop: 20,
         flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 10,
     },
     avatar: {
-        marginRight: 8,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 10,
     },
     username: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: 'bold',
     },
     navContainer: {
+        marginTop: 10,
         flexDirection: 'row',
-        gap: 16,
+        justifyContent: 'space-around',
     },
     navItemActive: {
         color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
         borderBottomWidth: 2,
         borderBottomColor: '#fff',
+        paddingBottom: 5,
     },
     navItemInactive: {
         color: '#888',
+        fontSize: 16,
     },
-    addButton: {
-        backgroundColor: '#575757',
-    },
-    });
+});
