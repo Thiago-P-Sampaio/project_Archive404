@@ -1,19 +1,33 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Platform, StatusBar, TouchableOpacity } from 'react-native';
+import Toast  from 'react-native-toast-message';
 
 export default function Header() {
-    return (
-        <View style={styles.headerContainer}>
-            {/* Avatar e Nome */}
-            <View style={styles.avatarContainer}>
-                <Image
-                    source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBe6Lrai5rlwmAfhe0H2DMmDT0vcDYWAE_iw&s' }} // Substitua pela imagem desejada
-                    style={styles.avatar}
-                />
-                <Text style={styles.username}>Archive 404</Text>
-            </View>
 
-            {/* Menu de Navegação - Apenas Visual */}
+  const showToast = () => {
+    Toast.show({
+      type: 'success',           // tipos: success, error, info
+      text1: 'Sucesso!',
+      text2: 'Você clicou no texto.',
+      position: 'bottom',        // posição do toast
+      visibilityTime: 3000,      // duração em ms
+    });
+  };
+    // Espaço seguro no topo para iOS/Android
+    const statusBarHeight = Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 24;
+
+    return (
+        <View style={[styles.headerContainer, { paddingTop: statusBarHeight + 24 }]}>
+            <View style={styles.avatarRow}>
+                <Image
+                    source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBe6Lrai5rlwmAfhe0H2DMmDT0vcDYWAE_iw&s' }}
+                    style={styles.avatar}
+                    resizeMode="cover"
+                />
+                <TouchableOpacity  onPress={showToast}>
+                <Text style={styles.username}>Archive404</Text>
+                </TouchableOpacity>
+            </View>
             <View style={styles.navContainer}>
                 <Text style={styles.navItemInactive}>Consoles</Text>
                 <Text style={styles.navItemActive}>Coleção</Text>
@@ -26,41 +40,46 @@ export default function Header() {
 const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: '#232729',
-        paddingVertical: 40,
-        paddingHorizontal: 10,
+        paddingBottom: 0,
+        paddingHorizontal: 0,
     },
-    avatarContainer: {
-        marginTop: 20,
+    avatarRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        marginLeft: 24,         // Espaço lateral do avatar+nome
+        marginBottom: 18,       // Espaço entre avatar/nome e nav-bar
     },
     avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 10,
+        width: 43,
+        height: 43,
+        borderRadius: 21.5,     // 50% para círculo perfeito
+        backgroundColor: '#111',
+        marginRight: 12,
     },
     username: {
         color: '#fff',
-        fontSize: 22,
-        fontWeight: 'bold',
+        fontSize: 24,
+        fontWeight: '700',
+        fontStyle: 'italic',
+        textAlign: 'left',
     },
     navContainer: {
-        marginTop: 10,
         flexDirection: 'row',
         justifyContent: 'space-around',
+        alignItems: 'flex-end',
+        paddingBottom: 8,
     },
     navItemActive: {
         color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-        borderBottomWidth: 2,
+        fontSize: 18,
+        fontWeight: '400',
+        borderBottomWidth: 3,
         borderBottomColor: '#fff',
-        paddingBottom: 5,
+        paddingBottom: 2,
     },
     navItemInactive: {
-        color: '#888',
-        fontSize: 16,
+        color: '#ccc',
+        fontSize: 18,
+        fontWeight: '400',
     },
 });
