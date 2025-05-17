@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import ModalConfirm from '../ModalConfirm/modalConfirm';
 
 export default function ModalForm({ visible, onClose }) {
     const [form, setForm] = useState({
@@ -16,10 +18,34 @@ export default function ModalForm({ visible, onClose }) {
         setForm({ ...form, [field]: value });
     };
 
+    const [isModalVisible, setModalVisible] = useState(false);
+    
+    const handleOpenModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
+
+    // Campos do formulário com labels
+    const fields = [
+        { label: 'Nome', key: 'nome' },
+        { label: 'Imagem(URL)', key: 'imagem' },
+        { label: 'Lançamento', key: 'lancamento' },
+        { label: 'Desenvolvedora', key: 'desenvolvedora' },
+        { label: 'Gênero', key: 'genero' },
+    ];
+
     return (
         <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={styles.overlay}>
-                <View style={styles.card}>
+                <LinearGradient
+                    colors={['rgba(25,29,32,1)', 'rgba(137,147,178,1)']}
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    style={styles.card}
+                >
                     {/* Título e botão de fechar */}
                     <View style={styles.header}>
                         <Text style={styles.title}>Adicionar Jogo</Text>
@@ -28,35 +54,49 @@ export default function ModalForm({ visible, onClose }) {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Campos do formulário */}
-                    {['Nome', 'Imagem(URL)', 'Lançamento', 'Desenvolvedora', 'Gênero'].map((label) => (
-                        <TextInput
-                            key={label}
-                            placeholder={label}
-                            placeholderTextColor="#ccc"
-                            style={styles.input}
-                            onChangeText={(value) => handleInputChange(label.toLowerCase(), value)}
-                        />
+                    {/* Campos do formulário com labels */}
+                    {fields.map(({ label, key }) => (
+                        <View key={key} style={styles.fieldContainer}>
+                            <Text style={styles.label}>{label}</Text>
+                            <TextInput
+                                placeholder={label}
+                                placeholderTextColor="#ccc"
+                                style={styles.input}
+                                onChangeText={(value) => handleInputChange(key, value)}
+                                value={form[key]}
+                            />
+                        </View>
                     ))}
-                    <TextInput
-                        placeholder="Descrição"
-                        placeholderTextColor="#ccc"
-                        style={[styles.input, styles.textArea]}
-                        multiline
-                        numberOfLines={4}
-                        onChangeText={(value) => handleInputChange('descricao', value)}
-                    />
+
+                    {/* Campo descrição com label */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Descrição</Text>
+                        <TextInput
+                            placeholder="Descrição"
+                            placeholderTextColor="#ccc"
+                            style={[styles.input, styles.textArea]}
+                            multiline
+                            numberOfLines={4}
+                            onChangeText={(value) => handleInputChange('descricao', value)}
+                            value={form.descricao}
+                        />
+                    </View>
 
                     {/* Botões */}
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.buttonEnviar}>
-                            <Text style={styles.buttonText}>Enviar</Text>
+                            <Text style={styles.buttonText} onPress={handleOpenModal}>Enviar</Text>
                         </TouchableOpacity>
+                        <ModalConfirm 
+                        visible={ isModalVisible }  
+                        onCancel={ handleCloseModal} 
+                        
+                        />
                         <TouchableOpacity style={styles.buttonCancelar} onPress={onClose}>
                             <Text style={styles.buttonText}>Cancelar</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </LinearGradient>
             </View>
         </Modal>
     );
@@ -67,13 +107,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.72)',
     },
     card: {
         width: '85%',
+        height: '90%',
         padding: 20,
-        backgroundColor: '#232729',
-        borderRadius: 20,
+        borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
@@ -84,15 +124,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 10,
+        alignItems: 'center',
     },
     title: {
-        fontSize: 20,
+        marginTop: 40,
+        marginLeft: 30,
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#fff',
     },
+    fieldContainer: {
+        marginBottom: 12,
+    },
+    label: {
+        color: '#ffffff',
+        textAlign: 'left',
+        fontSize: 14,
+        fontWeight: '200',
+        marginBottom: 4,
+    },
     input: {
         backgroundColor: '#fff',
-        marginVertical: 5,
         padding: 10,
         borderRadius: 8,
     },
@@ -103,7 +155,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginTop: 10,
+        marginTop: 20,
     },
     buttonEnviar: {
         backgroundColor: '#4CAF50',
