@@ -1,9 +1,9 @@
 import axios from "axios";
 
 
-const  jogosApi = axios.create({
-    baseURL: 'localhost:8080/'
+const  gamesService = axios.create({
+    baseURL: 'http://192.168.1.170:8082/games'
 })
 
 
-export default jogosApi;
+export default gamesService;
