@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, ActivityIndicator, AppRegistry } from "react-native";
+import { View, StyleSheet, FlatList, ActivityIndicator, Text, RefreshControl } from "react-native";
 import ModalForm from "../../Components/ModalForm/modalform";
 import CardGames from "../../Components/CardGames/cardgames";
 import ModalDetails from "../../Components/ModalDetails/modalDetails";
@@ -10,75 +10,99 @@ import gamesService from "../../Services/api";
 import ModalConfirm from "../../Components/ModalConfirm/modalConfirm";
 
 export default function HomeScreen() {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [jogos, setJogos] = useState([]);
+  const [isFormModalVisible, setFormModalVisible] = useState(false);
+  const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedJogo, setSelectedJogo] = useState(null);
-  const [isDetalhesVisible, setDetalhesVisible] = useState(false);
-  const [ModalConfirmVisible, setModalConfirmVisible] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [isDetailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [gameToEdit, setGameToEdit] = useState(null);
 
-  // Buscar jogos ao montar a tela
   useEffect(() => {
-    fetchJogos();
+    fetchGames();
   }, []);
 
-  const fetchJogos = async () => {
+  const fetchGames = async () => {
     setLoading(true);
     try {
       const response = await gamesService.get("/all");
-      setJogos(response.data);
+      setGames(response.data);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Erro ao carregar jogos." });
-      setJogos([]);
+      Toast.show({ type: "error", text1: "Erro ao carregar os jogos" });
+      setGames([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpenModal = () => setModalVisible(true);
-  const handleCloseModal = () => setModalVisible(false);
+  const openFormModalForAdd = () => {
+    setGameToEdit(null);
+    setFormModalVisible(true);
+  };
 
-  const handleAddGame = async (formData) => {
-    
+  const openFormModalForEdit = (game) => {
+    setGameToEdit(game);
+    setFormModalVisible(true);
+    setDetailsModalVisible(false);
+  };
+
+  const closeFormModal = () => {
+    setFormModalVisible(false);
+    setGameToEdit(null);
+  };
+
+  const handleSubmitForm = async (formData) => {
     try {
-        if (EditGame) {
-      await gamesService.put(`/updt/${EditGame.id}`, formData);
-      Toast.show({ type: 'success', text1: 'Jogo atualizado com sucesso!' });
-    } else {
-      await gamesService.post("/add", formData);
-      setModalVisible(false);
-      Toast.show({ type: "success", text1: "Jogo adicionado com sucesso!", position: 'bottom' });
-      fetchJogos(); // Atualiza lista
-    }
+      if (gameToEdit) {
+    
+        await gamesService.put(`/updt/${gameToEdit.id}`, formData);
+        Toast.show({ type: "success", text1: "Jogo atualizado com sucesso!" });
+      } else {
+       
+        await gamesService.post("/add", formData);
+        Toast.show({ type: "success", text1: "Jogo adicionado com sucesso!" });
+      }
+      closeFormModal();
+      fetchGames();
     } catch (error) {
-      Toast.show({ type: "error", text1: "Erro ao adicionar jogo." });
+      Toast.show({ type: "error", text1: "Erro ao salvar jogo." });
     }
   };
 
-  const handleCardPress = (jogo) => {
-    setSelectedJogo(jogo);
-    setDetalhesVisible(true);
+  const handleCardPress = (game) => {
+    setSelectedGame(game);
+    setDetailsModalVisible(true);
   };
 
-  const handleCloseDetalhes = () => {
-    setDetalhesVisible(false);
-    setSelectedJogo(null);
+  const closeDetailsModal = () => {
+    setDetailsModalVisible(false);
+    setSelectedGame(null);
   };
 
-  // Exemplo de editar/excluir (implemente conforme sua lógica)
+  const openConfirmModal = () => {
+    setConfirmModalVisible(true);
+  };
+
+  const closeConfirmModal = () => {
+    setConfirmModalVisible(false);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await gamesService.delete(`dell/${id}`);
+      Toast.show({ type: "info", text1: "Jogo removido!", position: "bottom" });
+      closeDetailsModal();
+      closeConfirmModal();
+      fetchGames();
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Erro ao remover o jogo!.", position: "bottom" });
+      closeConfirmModal();
+    }
+  };
+
   const handleEdit = () => {
-
-
-  };
-  const handleDelete =  async (id) => {
-       try{
-        await gamesService.delete(`dell/${id}`);
-        setDetalhesVisible(false)
-        Toast.show({ type: 'info', text1:'Jogo removido!', position: 'bottom'})
-        await fetchJogos();
-    } catch(error){
-        setDetalhesVisible(false)
-        Toast.show({ type: 'error', text1:'Não foi possível remover o jogo', position: 'bottom'})
+    if (selectedGame) {
+      openFormModalForEdit(selectedGame);
     }
   };
 
@@ -91,66 +115,65 @@ export default function HomeScreen() {
       style={{ flex: 1 }}
     >
       <View style={styles.container}>
+        <View style={styles.containerHeader}>
+          <Text style={styles.text}>{ games.length > 0 ? `${games.length} Jogos` : "Nenhum jogo" }</Text>
         <Button
           mode="contained"
-          onPress={handleOpenModal}
+          onPress={openFormModalForAdd}
           icon="plus"
           contentStyle={styles.contentStyle}
           style={styles.button}
           labelStyle={styles.labelStyle}
-        >
+          >
           Adicionar
         </Button>
+          </View>
 
-        {/* Lista de cards */}
+
         {loading ? (
           <ActivityIndicator color="#fff" size="large" style={{ marginTop: 30 }} />
         ) : (
           <FlatList
-            data={jogos}
+            data={games}
             keyExtractor={(item) => item.id?.toString() || item.nome}
             renderItem={({ item }) => (
-              <CardGames
-                image={item.img || item.imagem}
-                onPress={() => handleCardPress(item)}
-              />
+              <CardGames image={item.img || item.imagem} onPress={() => handleCardPress(item)} />
             )}
-            numColumns={2}
+            numColumns={3}
             contentContainerStyle={styles.listContent}
+             refreshControl={
+    <RefreshControl refreshing={loading} onRefresh={fetchGames} />
+  }
           />
         )}
 
-        {/* Modal de adicionar jogo */}
         <ModalForm
-          visible={isModalVisible}
-          onClose={handleCloseModal}
-          onSubmit={handleAddGame}
+          visible={isFormModalVisible}
+          onClose={closeFormModal}
+          onSubmit={handleSubmitForm}
+          initialData={gameToEdit}
         />
 
-        {/* Modal de detalhes */}
         <ModalDetails
-          visible={isDetalhesVisible}
-          jogo={selectedJogo}
-          onClose={handleCloseDetalhes}
+          visible={isDetailsModalVisible}
+          jogo={selectedGame}
+          onClose={closeDetailsModal}
           onEdit={handleEdit}
-          onDelete={() => setModalConfirmVisible(true)}
+          onDelete={openConfirmModal}
         />
 
-        <ModalConfirm 
-        visible={ ModalConfirmVisible }
-        onConfirm={ async () => {
-            await handleDelete(selectedJogo.id);
-            setModalConfirmVisible(false)
-        }}
-        onCancel={ () => setModalConfirmVisible(false)}
+        <ModalConfirm
+          visible={isConfirmModalVisible}
+          onConfirm={() => handleDelete(selectedGame?.id)}
+          onCancel={closeConfirmModal}
         />
-
       </View>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     padding: 10,
@@ -181,7 +204,22 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   listContent: {
+    paddingHorizontal: 6,
     alignItems: "flex-start",
     paddingBottom: 80,
+    marginTop: 5,
   },
+  containerHeader: {
+  width: '100%',             
+  flexDirection: 'row',      
+  justifyContent: 'space-between', 
+  alignItems: 'center',      
+  marginBottom: 10,          
+  paddingHorizontal: 10,     
+},
+text: {
+  color: '#fff',
+  fontSize: 20,
+  fontWeight: '200',
+},
 });
