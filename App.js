@@ -5,6 +5,7 @@ import HomeScreen from './src/Page/Home/homeScreen';
 import Toast from 'react-native-toast-message';
 
 
+
 export default function App() {
 
   return (
@@ -12,7 +13,8 @@ export default function App() {
       <StatusBar style="light" />
     <Header />
     <HomeScreen />
-      <Toast />
+
+    <Toast />
     </View>
   );
 }
