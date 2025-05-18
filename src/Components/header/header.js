@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Platform, StatusBar, TouchableOpacity } from 'react-native';
-import Toast  from 'react-native-toast-message';
+
 
 export default function Header() {
 
@@ -24,9 +24,7 @@ export default function Header() {
                     style={styles.avatar}
                     resizeMode="cover"
                 />
-                <TouchableOpacity  onPress={showToast}>
                 <Text style={styles.username}>Archive404</Text>
-                </TouchableOpacity>
             </View>
             <View style={styles.navContainer}>
                 <Text style={styles.navItemInactive}>Consoles</Text>
