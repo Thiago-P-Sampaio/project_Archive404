@@ -25,8 +25,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden', // para o borderRadius funcionar no Android com sombra
   },
   image: {
-    width: 135,
-    height: 135,
+    width: 100,
+    height: 100,
     borderRadius: 10,
+    objectFit: 'cover'
   },
 });
