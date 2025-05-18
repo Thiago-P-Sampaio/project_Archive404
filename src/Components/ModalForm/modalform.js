@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
-export default function ModalForm({ visible, onClose, onSubmit }) {
-
+export default function ModalForm({ visible, onClose, onSubmit, initialData }) {
   const [form, setForm] = useState({
     nome: '',
     img: '',
@@ -15,22 +13,42 @@ export default function ModalForm({ visible, onClose, onSubmit }) {
     descricao: '',
   });
 
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        nome: initialData.nome || '',
+        img: initialData.img || '',
+        lancamento: initialData.lancamento || '',
+        desenvolvedora: initialData.desenvolvedora || '',
+        genero: initialData.genero || '',
+        descricao: initialData.descricao || '',
+      });
+    } else {
+      setForm({
+        nome: '',
+        img: '',
+        lancamento: '',
+        desenvolvedora: '',
+        genero: '',
+        descricao: '',
+      });
+    }
+  }, [initialData]);
+
   const handleInputChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
-  // Validação simples: verifica se algum campo está vazio
   const isFormValid = () => {
     return Object.values(form).every(value => value.trim() !== '');
   };
 
   const handleSend = () => {
     if (!isFormValid()) {
-    Alert.alert('Nenhum jogo foi adicionado', 'Por favor, preencha todos os campos.');
+      Alert.alert('Formulário incompleto', 'Por favor, preencha todos os campos.');
       return;
     }
     onSubmit(form);
-
     // Opcional: limpar formulário após envio
     setForm({
       nome: '',
@@ -42,10 +60,9 @@ export default function ModalForm({ visible, onClose, onSubmit }) {
     });
   };
 
-  // Campos do formulário com labels
   const fields = [
     { label: 'Nome', key: 'nome' },
-    { label: 'Imagem(URL)', key: 'img' },
+    { label: 'Imagem (URL)', key: 'img' },
     { label: 'Lançamento', key: 'lancamento' },
     { label: 'Desenvolvedora', key: 'desenvolvedora' },
     { label: 'Gênero', key: 'genero' },
@@ -60,15 +77,13 @@ export default function ModalForm({ visible, onClose, onSubmit }) {
           end={{ x: 0.5, y: 1 }}
           style={styles.card}
         >
-          {/* Título e botão de fechar */}
           <View style={styles.header}>
-            <Text style={styles.title}>Adicionar Jogo</Text>
+            <Text style={styles.title}>{initialData ? 'Editar Jogo' : 'Adicionar Jogo'}</Text>
             <TouchableOpacity onPress={onClose}>
               <Ionicons name="close" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
 
-          {/* Campos do formulário com labels */}
           {fields.map(({ label, key }) => (
             <View key={key} style={styles.fieldContainer}>
               <Text style={styles.label}>{label}</Text>
@@ -82,7 +97,6 @@ export default function ModalForm({ visible, onClose, onSubmit }) {
             </View>
           ))}
 
-          {/* Campo descrição com label */}
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>Descrição</Text>
             <TextInput
@@ -96,13 +110,11 @@ export default function ModalForm({ visible, onClose, onSubmit }) {
             />
           </View>
 
-          {/* Botões */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.buttonEnviar} onPress={handleSend}>
-              <Text style={styles.buttonText}>Enviar</Text>
+            <TouchableOpacity style={styles.buttonSubmit} onPress={handleSend}>
+              <Text style={styles.buttonText}>{initialData ? 'Confirmar' : 'Adicionar'}</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.buttonCancelar} onPress={onClose}>
+            <TouchableOpacity style={styles.buttonCancel} onPress={onClose}>
               <Text style={styles.buttonText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -167,14 +179,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: 20,
   },
-  buttonEnviar: {
+  buttonSubmit: {
     backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 8,
     flex: 1,
     marginRight: 5,
   },
-  buttonCancelar: {
+  buttonCancel: {
     backgroundColor: '#BDB76B',
     padding: 10,
     borderRadius: 8,
