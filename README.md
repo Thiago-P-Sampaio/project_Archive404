@@ -85,7 +85,7 @@ src
 ```
 - Entrando no diretório:
 ``` bash
- git cd project_Archive4040
+  cd project_Archive4040
 ```
 - Instalando as dependências:
 ``` bash
