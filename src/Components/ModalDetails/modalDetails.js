@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     width: 214,
     height: 260,
     marginBottom: 24,
-    boxShadow: '9px 11px 4px rgba(0,0,0,0.25)', // Não funciona no RN, mas sombra já está no container
+    boxShadow: '9px 11px 4px rgba(0,0,0,0.25)', 
     backgroundColor: '#222',
   },
   titlegame: {
@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     alignSelf: 'flex-start',
     width: '100%',
-    fontFamily: 'Inter-ExtraLight', // Se você tiver a fonte instalada
   },
   descricao: {
     color: '#fff',
