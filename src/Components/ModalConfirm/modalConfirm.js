@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Ou 'react-native-linear-gradient' se não usar Expo
+import { LinearGradient } from 'expo-linear-gradient'; 
 
 export default function ModalConfirm({ visible, onCancel, onConfirm }) {
   return (

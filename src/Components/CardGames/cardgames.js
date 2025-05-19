@@ -7,7 +7,7 @@ export default function CardJogo({ image, onPress }) {
       <Image
         source={{ uri: image }}
         style={styles.image}
-        resizeMode="cover" // equivale a object-fit: cover
+        resizeMode="cover" 
       />
     </TouchableOpacity>
   );
@@ -20,9 +20,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 4, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, // sombra no Android
+    elevation: 5, 
     margin: 8,
-    overflow: 'hidden', // para o borderRadius funcionar no Android com sombra
+    overflow: 'hidden', 
   },
   image: {
     width: 100,
