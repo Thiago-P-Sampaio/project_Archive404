@@ -122,8 +122,40 @@ src
         </sub>
       </a>
     </td>
+    <td align="center">
+      <a href="https://github.com/DanieldeOliveiraGualtieroni">
+        <img src="https://avatars.githubusercontent.com/u/178602165?v=4" width="100px;" alt="Foto do Thiago"/><br>
+        <sub>
+          <b>Daniel de Oliveira Gualtieroni</b>
+        </sub>
+      </a>
+    </td>
   </tr>
 </table>
+
+---
+
+## Repositórios:
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Thiago-P-Sampaio/project_Archive404">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="100px;" alt="Foto"/><br>
+        <sub>
+          <b>Repositório Front-End</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/DevMarquesx/API-playstationgames">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="100px;" alt="Foto"/><br>
+        <sub>
+          <b>Repositório Back-End</b>
+        </sub>
+      </a>
+    </td>
+    </tr>
+    </table>
 
 ---
 
