@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, FlatList, ActivityIndicator, Text, RefreshControl } from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  Text,
+  RefreshControl,
+} from "react-native";
 import ModalForm from "../../Components/ModalForm/modalform";
 import CardGames from "../../Components/CardGames/cardgames";
 import ModalDetails from "../../Components/ModalDetails/modalDetails";
@@ -13,6 +20,7 @@ export default function HomeScreen() {
   const [isFormModalVisible, setFormModalVisible] = useState(false);
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [isDetailsModalVisible, setDetailsModalVisible] = useState(false);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -23,16 +31,22 @@ export default function HomeScreen() {
   }, []);
 
   const fetchGames = async () => {
-    setLoading(true);
+    if (!refreshing) setLoading(true);
     try {
-      const response = await gamesService.get("/all");
+      const response = await gamesService.get();
       setGames(response.data);
     } catch (error) {
       Toast.show({ type: "error", text1: "Erro ao carregar os jogos" });
       setGames([]);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchGames();
   };
 
   const openFormModalForAdd = () => {
@@ -54,12 +68,10 @@ export default function HomeScreen() {
   const handleSubmitForm = async (formData) => {
     try {
       if (gameToEdit) {
-    
-        await gamesService.put(`/updt/${gameToEdit.id}`, formData);
+        await gamesService.put(`/${gameToEdit.id}`, formData);
         Toast.show({ type: "success", text1: "Jogo atualizado com sucesso!" });
       } else {
-       
-        await gamesService.post("/add", formData);
+        await gamesService.post("", formData);
         Toast.show({ type: "success", text1: "Jogo adicionado com sucesso!" });
       }
       closeFormModal();
@@ -89,13 +101,17 @@ export default function HomeScreen() {
 
   const handleDelete = async (id) => {
     try {
-      await gamesService.delete(`dell/${id}`);
+      await gamesService.delete(`/${id}`);
       Toast.show({ type: "info", text1: "Jogo removido!", position: "bottom" });
       closeDetailsModal();
       closeConfirmModal();
       fetchGames();
     } catch (error) {
-      Toast.show({ type: "error", text1: "Erro ao remover o jogo!.", position: "bottom" });
+      Toast.show({
+        type: "error",
+        text1: "Erro ao remover o jogo!.",
+        position: "bottom",
+      });
       closeConfirmModal();
     }
   };
@@ -116,34 +132,40 @@ export default function HomeScreen() {
     >
       <View style={styles.container}>
         <View style={styles.containerHeader}>
-          <Text style={styles.text}>{ games.length > 0 ? `${games.length} Jogos` : "Nenhum jogo" }</Text>
-        <Button
-          mode="contained"
-          onPress={openFormModalForAdd}
-          icon="plus"
-          contentStyle={styles.contentStyle}
-          style={styles.button}
-          labelStyle={styles.labelStyle}
+          <Text style={styles.text}>
+            {games.length > 0 ? `${games.length} Jogos` : "Nenhum jogo"}
+          </Text>
+          <Button
+            mode="contained"
+            onPress={openFormModalForAdd}
+            icon="plus"
+            contentStyle={styles.contentStyle}
+            style={styles.button}
+            labelStyle={styles.labelStyle}
           >
-          Adicionar
-        </Button>
-          </View>
+            Adicionar
+          </Button>
+        </View>
 
-
-        {loading ? (
+        {loading && !refreshing ? (
           <ActivityIndicator color="#fff" size="large" style={{ marginTop: 30 }} />
         ) : (
           <FlatList
             data={games}
-            keyExtractor={(item) => item.id?.toString() || item.nome}
+            keyExtractor={(item, index) =>
+              item.id?.toString() || `${item.nome}-${index}`
+            }
             renderItem={({ item }) => (
-              <CardGames image={item.img || item.imagem} onPress={() => handleCardPress(item)} />
+              <CardGames
+                image={item.img || item.imagem}
+                onPress={() => handleCardPress(item)}
+              />
             )}
             numColumns={3}
             contentContainerStyle={styles.listContent}
-             refreshControl={
-    <RefreshControl refreshing={loading} onRefresh={fetchGames} />
-  }
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
           />
         )}
 
@@ -173,7 +195,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     padding: 10,
@@ -210,16 +231,16 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   containerHeader: {
-  width: '100%',             
-  flexDirection: 'row',      
-  justifyContent: 'space-between', 
-  alignItems: 'center',      
-  marginBottom: 10,          
-  paddingHorizontal: 10,     
-},
-text: {
-  color: '#fff',
-  fontSize: 20,
-  fontWeight: '200',
-},
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
+  text: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "200",
+  },
 });
